@@ -17,6 +17,8 @@ public final class Piece
     private PieceType type;
     private PlayerId player;
     
+    private MoveSet moves;
+    
     Rank rank;
     
     public Piece(PieceType type, PlayerId player)
@@ -43,6 +45,19 @@ public final class Piece
     }
     public final Board getBoard() { return getRank().getBoard(); }
     
-    public final MoveSet getMoveSet() { return type.generateMoveSet(rank); }
+    public final MoveSet getMoveSet()
+    {
+        if(moves == null)
+            return rank == null ? null : (moves = type.generateMoveSet(rank));
+        return moves;
+    }
+    
+    public final void clearMoves() { moves = null; }
+    public final MoveSet generateMoves()
+    {
+        if(rank != null)
+            return moves = type.generateMoveSet(rank);
+        return moves = null;
+    }
     
 }

@@ -6,8 +6,12 @@
 package kp.games.kchess.board;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import kp.games.kchess.board.Board.Rank;
+import kp.games.kchess.core.EndgameState;
+import kp.games.kchess.core.Move;
+import kp.games.kchess.core.MoveState;
 
 /**
  *
@@ -81,6 +85,40 @@ public final class Board implements Iterable<Rank>
                 else ranks[i].setPiece(p);
             }
         }
+    }
+    
+    public final MoveState applyMove(Move move, List<String> log)
+    {
+        try
+        {
+            Rank from = getRank(move.getFromId());
+            Rank to = getRank(move.getToId());
+            
+            Piece pfrom;
+            if(!from.hasPiece() || (pfrom = from.getPiece()).getPlayer() != move.getPlayer())
+                return null;
+            from.removePiece();
+            
+            if(!pfrom.getMoveSet().isLegalMove(to))
+                return null;
+            
+            MoveState result = new MoveState(move, createSnapshot());
+            if(to.hasPiece())
+                to.replacePiece(pfrom);
+            else to.setPiece(pfrom);
+            
+            return result;
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace(System.err);
+            return null;
+        }
+    }
+    
+    public final EndgameState checkEndgame()
+    {
+        
     }
     
     @Override
@@ -171,25 +209,27 @@ public final class Board implements Iterable<Rank>
             return piece;
         }
         
-        private void setPiece(Piece piece)
+        public final void setPiece(Piece piece)
         {
             if(this.piece != null)
                 throw new IllegalStateException();
             this.piece = Objects.requireNonNull(piece);
             this.piece.rank = this;
+            this.piece.generateMoves();
         }
         
-        private Piece removePiece()
+        public final Piece removePiece()
         {
             if(piece == null)
                 throw new IllegalStateException();
             Piece p = piece;
             piece = null;
             p.rank = null;
+            p.clearMoves();
             return p;
         }
         
-        private void replacePiece(Piece newPiece)
+        public final void replacePiece(Piece newPiece)
         {
             if(piece == null)
                 throw new IllegalStateException();
@@ -197,6 +237,20 @@ public final class Board implements Iterable<Rank>
                 throw new IllegalStateException();
             removePiece();
             setPiece(newPiece);
+        }
+        
+        @Override
+        public final boolean equals(Object o)
+        {
+            return o == this || (o instanceof Rank && id == ((Rank) o).id);
+        }
+
+        @Override
+        public final int hashCode()
+        {
+            int hash = 7;
+            hash = 71 * hash + this.id;
+            return hash;
         }
     }
 }

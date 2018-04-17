@@ -6,6 +6,7 @@
 package kp.games.kchess.core;
 
 import java.util.Objects;
+import kp.games.kchess.board.BoardSnapshot;
 import kp.games.kchess.board.PlayerId;
 
 /**
@@ -39,8 +40,23 @@ public final class Command
         return new Command(CommandType.CHAT_MESSAGE, username, text);
     }
     
-    public static final Command move(PlayerId player, Move move)
+    public static final Command move(Move move)
     {
-        return new Command(CommandType.MOVE, player, move);
+        return new Command(CommandType.MOVE, move);
+    }
+    
+    public static final Command moveResult(MoveState ms, BoardSnapshot currentState)
+    {
+        return new Command(CommandType.MOVE_RESULT, ms, currentState);
+    }
+    
+    public static final Command playerTurn(PlayerId player)
+    {
+        return new Command(CommandType.PLAYER_TURN, player);
+    }
+    
+    public static final Command endgame(EndgameState state)
+    {
+        return new Command(CommandType.ENDGAME, state);
     }
 }

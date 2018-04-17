@@ -19,6 +19,15 @@ public enum PlayerId
     WHITE,
     BLACK;
     
+    private final String scode;
+    
+    private PlayerId()
+    {
+        this.scode = "<" + name() + ">";
+    }
+    
+    public final String getStringCode() { return scode; }
+    
     public final PlayerId inverse() { return this == WHITE ? BLACK : WHITE; }
     
     public static final void serialize(OutputStream os, PlayerId player) throws IOException
@@ -29,5 +38,12 @@ public enum PlayerId
     public static final PlayerId unserialize(InputStream is) throws IOException
     {
         return IOUtils.readSignedByte(is) == 0 ? WHITE : BLACK;
+    }
+    
+    public static final PlayerId codeToPlayer(String code)
+    {
+        if(WHITE.scode.equals(code))
+            return WHITE;
+        return BLACK.scode.equals(code) ? BLACK : null;
     }
 }

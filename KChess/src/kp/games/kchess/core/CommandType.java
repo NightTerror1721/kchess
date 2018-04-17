@@ -13,7 +13,10 @@ public enum CommandType
 {
     INVALID,
     CHAT_MESSAGE,
-    MOVE;
+    MOVE,
+    MOVE_RESULT,
+    PLAYER_TURN,
+    ENDGAME;
     
     private static final CommandType[] VALUES = values();
     public static final CommandType valueOf(int ordinal)
